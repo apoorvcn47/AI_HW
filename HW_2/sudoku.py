@@ -36,6 +36,7 @@ for i in range(0,sudoku_size):
 
 blank_space_flag = bool(1)            
 
+#simulated annealing loop
 while(blank_space_flag == bool(1) ):
     #parsing through all cells
     max_constrains = 0
@@ -97,35 +98,40 @@ while(blank_space_flag == bool(1) ):
         if (len(possible_options_list)!=0):    
             sudoku_int_array[max_constrains_address[0]][max_constrains_address[1]] = random.choice(possible_options_list)
         changed_no_add_list.append([max_constrains_address[0],max_constrains_address[1]])
-        
+     
+    print "before reset"
+    print sudoku_int_array
+       
+    blank_add_list_sa = []
     #check if there are still unassigned places (ie local minima),
     #reset row, column and block constrains to ' '
     for i in range(0,sudoku_size):
         for j in range(0,sudoku_size):
             if(sudoku_int_array[i][j] == ' '):
                 blank_space_flag = bool(1)
-                
-                #for p in range(0,sudoku_size):
-                #    if(perm_no_memory.count([p,j])==0):
-                #        sudoku_int_array[p][j] = ' '
-        
-                #for q in range(0,sudoku_size):
-                #    if(perm_no_memory.count([i,q])==0):
-                #        sudoku_int_array[i][q] = ' '
-        
-                quad_i = int(math.ceil((max_constrains_address[0]+1)/math.sqrt(sudoku_size)))
-                quad_j = int(math.ceil((max_constrains_address[1]+1)/math.sqrt(sudoku_size)))
+                blank_add_list_sa.append([i,j])
     
-                for r in range(0,int(math.sqrt(sudoku_size))):
-                    for s in range(0,int(math.sqrt(sudoku_size))):
-                        if(perm_no_memory.count([r+int((quad_i-1)*(math.sqrt(sudoku_size))),s+int((quad_j-1)*(math.sqrt(sudoku_size)))])==0):
-                            sudoku_int_array[r+int((quad_i-1)*(math.sqrt(sudoku_size)))][s+int((quad_j-1)*(math.sqrt(sudoku_size)))] = ' '
-                break
+    if (len(blank_add_list_sa) == 0):
+        print "solution found"
+        break
+               
+    random_blank_add = random.choice(blank_add_list_sa)
+
                 
-            else:
-                blank_space_flag = bool(0)
-        
-        if(sudoku_int_array[i][j] == ' '):
-            break
                 
-    
+                
+    for p in range(0,sudoku_size):
+        if(perm_no_memory.count([p,random_blank_add[1]])==0):
+            sudoku_int_array[p][random_blank_add[1]] = ' '
+
+    for q in range(0,sudoku_size):
+        if(perm_no_memory.count([random_blank_add[0],q])==0):
+            sudoku_int_array[random_blank_add[0]][q] = ' '
+
+    quad_i = int(math.ceil((random_blank_add[0]+1)/math.sqrt(sudoku_size)))
+    quad_j = int(math.ceil((random_blank_add[1]+1)/math.sqrt(sudoku_size)))
+
+    for r in range(0,int(math.sqrt(sudoku_size))):
+        for s in range(0,int(math.sqrt(sudoku_size))):
+            if(perm_no_memory.count([r+int((quad_i-1)*(math.sqrt(sudoku_size))),s+int((quad_j-1)*(math.sqrt(sudoku_size)))])==0):
+                sudoku_int_array[r+int((quad_i-1)*(math.sqrt(sudoku_size)))][s+int((quad_j-1)*(math.sqrt(sudoku_size)))] = ' '
